@@ -43,7 +43,10 @@ List each element that reads and displays data from the simulator.
 
 | Element | What It Shows | Simulator Feature |
 |---------|--------------|-------------------|
-| e.g. Gauge | ADC channel 0 voltage level | ADC ch.0 |
+| Current Temperature | Live simulated temperature update every second | Live simulated temperature update every second |
+| Heater Status | Shows "HEATING" (ON) or "PERFECT" (OFF) | Logic State |
+| Connection Status | Shows "Connected" or "Disconnected" | Math.random() Sim |
+| Alert Banners | Shows warnings for "Too Hot" ($>60^{\circ}C$) or "Too Cold" ($<28^{\circ}C$)  | Safety Check |
 
 ### Control Elements
 
@@ -51,7 +54,9 @@ List each element that sends a command to the simulator.
 
 | Element | What It Does | Command Sent |
 |---------|-------------|--------------|
-| e.g. Toggle button | Turn LED 0 on or off | `led,0,2` |
+| Heater ON Button | Starts increasing temperature toward target | heaterOn = true |
+| Heater OFF Button | Stops heating; temperature cools toward $25^{\circ}C$ ambient  | heaterOn = false |
+| Target Input | Allows user to enter a desired setpoint | targetTemp update |
 
 * * *
 
@@ -60,9 +65,9 @@ List each element that sends a command to the simulator.
 1. Start the mock hardware server:
    ```bash
    cd simulator/mock-hardware-server
-   npm start
+npm start
    ```
-2. Open `index.html` using VS Code Live Server.
+2. Open Onsen_sauna.html using VS Code Live Server.
 3. Check the browser console — a WebSocket connection message should appear.
 4. Check the server terminal — `[CONNECT]` should be printed.
 
@@ -70,25 +75,21 @@ List each element that sends a command to the simulator.
 
 ## File Structure
 
-List the main files in your project and briefly describe each one.
-
 ```
 project-folder/
-├── index.html      — main page
-├── main.js         — application logic
-└── ...
+├── Onsen_sauna.html  — The main HMI dashboard containing the UI structure (HTML), styling (CSS), and the core simulation/application logic (JavaScript)[cite: 1, 102, 109].
+└── README.pdf        — Documentation outlining the project goal, main workflows, temperature simulation formulas, and safety alert thresholds[cite: 2, 11, 53, 66].
 ```
-
 * * *
 
 ## Known Limitations
 
-List anything that does not work as intended, or features you planned but did not complete.
-If everything works, write "None".
+- Simulated Connectivity: The connection status is designed to drop randomly every 5 seconds to simulate unstable IoT conditions.
+- Alert Spam Prevention: Popups are restricted from repeating automatically to prevent user notification spam.
 
 * * *
 
 ## Screenshots
 
-Add one or two screenshots of the running application.
-In Markdown, use: `![description](path/to/image.png)`
+
+`![Moodeng's Sauna Dashboard Interface](moodeng.png)`
