@@ -65,9 +65,9 @@ List each element that sends a command to the simulator.
 1. Start the mock hardware server:
    ```bash
    cd simulator/mock-hardware-server
-npm start
+   npm start
    ```
-2. Open Onsen_sauna.html using VS Code Live Server.
+2. Open `Onsen_sauna.html` using VS Code Live Server.
 3. Check the browser console — a WebSocket connection message should appear.
 4. Check the server terminal — `[CONNECT]` should be printed.
 
@@ -77,19 +77,19 @@ npm start
 
 ```
 project-folder/
-├── Onsen_sauna.html  — The main HMI dashboard containing the UI structure (HTML), styling (CSS), and the core simulation/application logic (JavaScript)[cite: 1, 102, 109].
-└── README.pdf        — Documentation outlining the project goal, main workflows, temperature simulation formulas, and safety alert thresholds[cite: 2, 11, 53, 66].
+├── Onsen_sauna.html  — Main dashboard containing the UI layout, styling, and application logic
+└── README.pdf        — Project documentation covering the goal, workflows, temperature simulation formulas, and safety alert thresholds
 ```
+
 * * *
 
 ## Known Limitations
 
-- Simulated Connectivity: The connection status is designed to drop randomly every 5 seconds to simulate unstable IoT conditions.
-- Alert Spam Prevention: Popups are restricted from repeating automatically to prevent user notification spam.
+- Simulated connectivity: The connection status drops randomly every 5 seconds to simulate unstable IoT conditions.
+- Alert spam prevention: Popups are restricted from repeating automatically to avoid notification spam.
 
 * * *
 
 ## Screenshots
 
-
-`![Moodeng's Sauna Dashboard Interface](moodeng.png)`
+![Moodeng's Sauna Dashboard Interface](moodeng.png)
