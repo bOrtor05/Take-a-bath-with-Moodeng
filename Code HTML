@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>บ่อหมูเด้ง</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    /* ====== THEME: Summer ====== */
+    :root{
+      --wood:#efa5ec;
+      --paper:#f7f3ed;
+      --ink:#3a2f2f;
+      --accent:#c94f3d;   /* vermilion */
+      --cool:#4a7c8c;     /* indigo-ish */
+      --ok:#6b8e23;
+      --warn:#b33a2b;
+      --shadow: 0 10px 25px rgba(0,0,0,.12);
+    }
+
+    body{
+      min-height: 100vh;
+      width: 100vw;
+      margin:0;
+      font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+      color:var(--ink);
+      background-image: url("https://play-lh.googleusercontent.com/YpwE8GCw-pFuWzfZqP7PVYaOqhkGQ1Z4s-mdJ_4VQRpdr4eHCRMuPhd1Zs8O00wqryE");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display:flex;
+      justify-content:center;
+      padding:32px 16px;
+    }
+
+    .card{
+      height:450px;
+      width:320px;
+      background:var(--paper);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid #e6dccf;
+    }
+
+    .header{
+      background:linear-gradient(180deg, hsl(311, 84%, 78%), #e4acec);
+      padding:16px 20px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom:1px solid #9e7a9b;
+    }
+
+    .title{
+      font-weight:700;
+      letter-spacing:.5px;
+    }
+
+    .conn{
+      font-size:13px;
+      font-weight:600;
+    }
+    .conn.ok{ color:var(--ok); }
+    .conn.bad{ color:rgb(212, 84, 84); }
+
+    .section{
+      padding:14px 18px;
+      border-bottom:1px dashed #eac0e6;
+    }
+
+    .label{
+      font-size:13px;
+      opacity:.8;
+      margin-bottom:6px;
+    }
+
+    .temp{
+      font-size:40px;
+      text-align:center;
+      margin:6px 0 2px;
+      font-weight:700;
+      letter-spacing:.5px;
+    }
+
+    .temp.hot{ color:var(--accent); }
+    .temp.cool{ color:var(--cool); }
+
+    .status{
+      text-align:center;
+      font-weight:700;
+      margin-top:4px;
+    }
+
+    .row{
+      display:flex;
+      gap:10px;
+    }
+
+    input[type="number"]{
+      width:93%;
+      padding:10px 12px;
+      border-radius:10px;
+      border:1px solid #8c95e6;
+      background:#c9e5f5;
+      font-size:16px;
+    }
+
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:12px;
+      border:none;
+      cursor:pointer;
+      font-weight:700;
+      letter-spacing:.4px;
+      box-shadow: var(--shadow);
+      transition: transform .05s ease, opacity .15s ease;
+    }
+    .btn:active{ transform: translateY(1px); }
+
+    .btn.on{ background:var(--accent); color:#fff; }
+    .btn.off{ background:var(--cool); color:#fff; }
+
+    /* ====== Alert Banner ====== */
+    .alert{
+      display:none;
+      padding:12px 16px;
+      background:linear-gradient(180deg, #e7b7a9, #d89382);
+      color:#3b1f1a;
+      font-weight:700;
+      text-align:center;
+      letter-spacing:.5px;
+      border-top:1px solid #d18473;
+    }
+    .alert.show{ display:block; }
+
+    /* small footer note */
+    .foot{
+      padding:10px 16px 14px;
+      font-size:12px;
+      opacity:.7;
+      text-align:center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <div class="title">🦛 Moodeng's sauna</div>
+    <div id="conn" class="conn ok">● Connected</div>
+  </div>
+
+  <!-- ALERT -->
+  <div id="alert" class="alert">⚠ Moodeng is too hot! — Please turn heater OFF</div>
+  <div id="lowAlert" class="alert">🧊 Moodeng is too cold! — Please turn heater ON</div>
+  <!-- TEMPERATURE -->
+  <div class="section">
+    <div class="label">Current Moodeng's bathtub temp</div>
+    <div id="temp" class="temp">30.0 °C</div>
+    <div id="status" class="status">Moodeng is too lonely<span> please play with Moodeng</span></div>
+  </div>
+
+  <!-- TARGET -->
+  <div class="section">
+    <div class="label">Moodeng wants warm temp!🦛</div>
+    <input id="targetInput" type="number" value="40" min="25" max="90" />
+  </div>
+
+  <!-- CONTROL -->
+  <div class="section">
+    <div class="label">Control</div>
+    <div class="row">
+      <button id="onBtn" class="btn on">Heater ON</button>
+      <button id="offBtn" class="btn off">Heater OFF</button>
+    </div>
+  </div>
+
+  <div class="foot">Thank you for giving Moodeng a bath.</div>
+</div>
+
+<script>
+  // ====== DATA ======
+  let currentTemp = 30;
+  let targetTemp = 40;
+  let heaterOn = false;
+  let connected = true;
+
+  const ambientTemp = 25;
+  const maxTemp = 60;
+  const minTemp = 28;
+
+  // prevent alert spam
+  let overheatAlerted = false;
+  let lowTempAlerted = false;
+
+  // ====== ELEMENTS ======
+  const tempEl = document.getElementById("temp");
+  const statusEl = document.getElementById("status");
+  const connEl = document.getElementById("conn");
+  const alertEl = document.getElementById("alert");
+  const lowAlertEl = document.getElementById("lowAlert");
+  const targetInput = document.getElementById("targetInput");
+
+  // ====== CONTROL ======
+  document.getElementById("onBtn").onclick = () => {
+    heaterOn = true;
+  };
+
+  document.getElementById("offBtn").onclick = () => {
+    heaterOn = false;
+  };
+
+  targetInput.onchange = () => {
+    const v = parseFloat(targetInput.value);
+    if (!isNaN(v)) targetTemp = v;
+  };
+
+  // ====== SIMULATION ======
+  function simulate() {
+    if (!connected) return;
+
+    if (heaterOn) {
+      // smooth approach to target
+      currentTemp += (targetTemp - currentTemp) * 0.05;
+    } else {
+      // cool down to ambient
+      currentTemp += (ambientTemp - currentTemp) * 0.15;
+    }
+  }
+
+  // ====== UI UPDATE ======
+  function updateUI() {
+    // temp text
+    tempEl.innerText = currentTemp.toFixed(1) + " °C";
+    tempEl.className = "temp " + (currentTemp > targetTemp ? "hot" : "cool");
+
+    // status
+    statusEl.innerText = heaterOn ? "HEATING" : "PERFECT";
+
+    // connection
+    if (connected) {
+      connEl.innerText = "● Connected";
+      connEl.className = "conn ok";
+    } else {
+      connEl.innerText = "● Disconnected";
+      connEl.className = "conn bad";
+    }
+
+    // ====== OVERHEAT LOGIC ======
+    if (currentTemp > maxTemp) {
+      alertEl.classList.add("show");
+
+      // trigger browser alert once per crossing
+      if (!overheatAlerted) {
+        alert("⚠ Moodeng is gonna melt! " + maxTemp + "°C is PERFECT");
+        overheatAlerted = true;
+      }
+    } else {
+      alertEl.classList.remove("show");
+      overheatAlerted = false;
+    }
+    // ====== LOW TEMP LOGIC ======  
+      if (currentTemp < minTemp) {
+        lowAlertEl.classList.add("show");
+
+        if(!lowTempAlerted) {
+          alert("🧊 Moodeng is too cold! Please turn heater ON");
+          lowTempAlerted = true;
+        }
+      } else {
+        lowAlertEl.classList.remove("show");
+        lowTempAlerted = false;
+      } 
+  }
+  // ====== CONNECTION SIM ======
+  setInterval(() => {
+    connected = Math.random() > 0.1;
+  }, 5000);
+
+  // ====== MAIN LOOP ======
+  setInterval(() => {
+    simulate();
+    updateUI();
+  }, 1000);
+</script>
+
+</body>
+</html>
